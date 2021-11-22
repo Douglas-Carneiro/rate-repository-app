@@ -1,8 +1,11 @@
 import React from 'react';
-import { View, StyleSheet, Text, ScrollView, Platform } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, Pressable } from 'react-native';
 import Constants from 'expo-constants';
 import theme from '../theme';
 import { Link } from "react-router-native";
+import { useQuery } from '@apollo/client';
+import { GET_AUTHORIZED_USER } from '../graphql/queries';
+import useSignOut from '../hooks/useSignOut';
 
 const styles = StyleSheet.create({
   container: {
@@ -14,12 +17,8 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '700',
     fontSize: 18,
-    padding: 20,
-    fontFamily: Platform.select({
-      android: 'Roboto',
-      ios: 'Arial',
-      default: 'System'
-    })
+    paddingVertical: 20,
+    paddingHorizontal: 10
   }
 });
 
@@ -29,12 +28,32 @@ const AppBarTab = ({ tabTitle, slug }) => (
   </Link>
 );
 
+const Logout = () => {
+  const signOut = useSignOut();
+  return (
+    <Pressable onPress={async () => await signOut()}>
+    <Text style={styles.title}>Sign Out</Text>
+  </Pressable>
+  );
+};
+
 const AppBar = () => {
+  const { loading, data } = useQuery(GET_AUTHORIZED_USER);
+
+  if (loading) return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Loading ...</Text>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <ScrollView horizontal>
         <AppBarTab tabTitle="Repositories" slug="/"/>
-        <AppBarTab tabTitle="Sign In" slug="/login"/>
+        {data.authorizedUser === null ? 
+          <AppBarTab tabTitle="Sign In" slug="/login"/> : 
+          <Logout /> 
+        }
       </ScrollView>
     </View>
   );

@@ -2,9 +2,12 @@ import React from 'react';
 
 import Text from './Text';
 import FormikTextInput from './FormikTextInput';
-import { View, Pressable, StyleSheet, Platform } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
 import { Formik } from 'formik';
 import * as yup from 'yup';
+
+import useSignIn from '../hooks/useSignIn';
+import { useHistory } from "react-router-native";
 
 import theme from '../theme';
 
@@ -27,7 +30,6 @@ const formStyles = StyleSheet.create({
     fontSize: 16,
     padding: 10,
     marginVertical: 8,
-    fontFamily: Platform.select(theme.fonts)
   },
   buttonnContainer: {
     display: 'flex',
@@ -77,8 +79,19 @@ const validationSchema = yup.object().shape({
 });
 
 const SignIn = () => {
-  const onSubmit = (values) => {
-    console.log(values);
+  const [signIn] = useSignIn();
+  let history = useHistory();
+
+  const onSubmit = async (values) => {
+    const { username, password } = values;
+
+    try {
+      const data = await signIn({ username, password });
+      console.log(data);
+      history.push("/");
+    } catch (e) {
+      console.log(e);
+    }
   };
   
   return (
