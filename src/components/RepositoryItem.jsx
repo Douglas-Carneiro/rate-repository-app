@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Image, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet, Pressable } from 'react-native';
 import Text from './Text';
 import theme from '../theme';
+import * as Linking from 'expo-linking';
 
 const cardHeaderStyles = StyleSheet.create({
   container: {
@@ -41,17 +42,17 @@ const cardHeaderStyles = StyleSheet.create({
 
 const CardHeader = ({ imgUrl, repoTitle, description, language }) => {
   return (
-    <View style={cardHeaderStyles.container}>
+    <View testID="repoHeader" style={cardHeaderStyles.container}>
       <View style={cardHeaderStyles.imgContainer}>
-        <Image style={cardHeaderStyles.img} source={{
+        <Image testID="repoImg" style={cardHeaderStyles.img} source={{
           uri: imgUrl,
         }}/>
       </View>
       <View style={cardHeaderStyles.infoContainer}>
-        <Text fontWeight="bold" fontSize="subheading">{repoTitle}</Text>
-        <Text color="textSecondary" style={cardHeaderStyles.subtitle}>{description}</Text>
+        <Text testID="repoTitle" fontWeight="bold" fontSize="subheading">{repoTitle}</Text>
+        <Text testID="repoDescription" color="textSecondary" style={cardHeaderStyles.subtitle}>{description}</Text>
         <View style={cardHeaderStyles.languageTag}>
-          <Text style={{color: 'white'}}>{language}</Text>
+          <Text testID="repoLanguage" style={{color: 'white'}}>{language}</Text>
         </View>
       </View>
     </View>
@@ -70,11 +71,29 @@ const cardFooterStyles = StyleSheet.create({
   actionText: {
     textDecorationLine: 'underline',
   },
+  buttonContainer: {
+    marginTop: 20,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  button: {
+    textAlign: 'center',
+    borderRadius: 5,
+    flexGrow: 1,
+    height: 60,
+    fontSize: 16,
+    fontWeight: '700',
+    color: 'white',
+    backgroundColor: theme.colors.primary,
+    padding: 16,
+  }
 });
 
 const CardFooterInfo = ({ metric, quantity }) => {
   return (
-    <View style={cardFooterStyles.actionTouchable} >
+    <View testID="repoFooter" style={cardFooterStyles.actionTouchable} >
       <Text fontWeight="bold" fontSize="subheading">{quantity}</Text>
       <Text color="textSecondary">{metric}</Text>
     </View>
@@ -107,6 +126,12 @@ const RepositoryItem = ({ repository }) => (
   <View style={cardStyles.container}>
     <CardHeader imgUrl={repository.ownerAvatarUrl} repoTitle={repository.fullName} description={repository.description} language={repository.language}/>
     <CardFooter stars={repository.stargazersCount} forks={repository.forksCount} reviews={repository.reviewCount} rating={repository.ratingAverage} />
+    {repository.url ? 
+      <Pressable style={cardFooterStyles.buttonContainer} onPress={() => {Linking.openURL(repository.url);}}>
+        <Text style={cardFooterStyles.button}>Open in Github</Text>
+      </Pressable> :
+      null
+    }
   </View>
 );
 

@@ -6,7 +6,7 @@ import { View, Pressable, StyleSheet } from 'react-native';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 
-import useSignIn from '../hooks/useSignIn';
+import useReview from '../hooks/useReview';
 import { useHistory } from "react-router-native";
 
 import theme from '../theme';
@@ -52,7 +52,9 @@ const formStyles = StyleSheet.create({
 
 const initialValues = {
   username: '',
-  password: '',
+  repositoryName: '',
+  rating: '',
+  review: ''
 };
 
 const SignInForm = ({ onSubmit }) => {
@@ -61,30 +63,32 @@ const SignInForm = ({ onSubmit }) => {
       <FormikTextInput 
         style={formStyles.input} 
         name="username" 
-        placeholder="Username"
-        testID="usernameField" />
+        placeholder="Owner username" />
       <FormikTextInput 
-        style={formStyles.input} 
-        isPassword={true} 
-        name="password" 
-        placeholder="Password"
-        testID="passwordField" />
+        style={formStyles.input}
+        name="repositoryName" 
+        placeholder="Repository name" />
+      <FormikTextInput 
+        style={formStyles.input}
+        name="rating" 
+        placeholder="Rating" />
+      <FormikTextInput 
+        style={formStyles.input}
+        name="review" 
+        placeholder="Write your review"
+        multiline />
       <Pressable style={formStyles.buttonContainer} onPress={onSubmit} testID="submitButton">
-        <Text style={formStyles.button}>Sign in</Text>
+        <Text style={formStyles.button}>Create a review</Text>
       </Pressable>
     </View>
   );
 };
 
 const validationSchema = yup.object().shape({
-  username: yup
-    .string()
-    .min(2, 'Username must be at least 2 characters')
-    .required('Username is required'),
-  password: yup
-    .string()
-    .min(8, 'Password must be at least 8 characters in length')
-    .required('Password is required'),
+  username: yup.string().required('Username is required'),
+  repositoryName: yup.string().required('Name is required'),
+  rating: yup.number().required('Rating is required').positive().integer(),
+  review: yup.string()
 });
 
 export const CompleteForm = ({ onSubmit }) => {
@@ -99,17 +103,17 @@ export const CompleteForm = ({ onSubmit }) => {
   );
 };
 
-const SignIn = () => {
-  const [signIn] = useSignIn();
+const NewReview = () => {
+  const [createNewReview] = useReview();
   let history = useHistory();
 
   const onSubmit = async (values) => {
-    const { username, password } = values;
+    const { username, repositoryName, rating, review } = values;
 
     try {
-      const data = await signIn({ username, password });
+      const data = await createNewReview({ username, repositoryName, rating, review });
       console.log(data);
-      history.push("/");
+      history.push(`/${data.createReview.repositoryId}`);
     } catch (e) {
       console.log(e);
     }
@@ -120,4 +124,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default NewReview;

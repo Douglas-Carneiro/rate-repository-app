@@ -51,8 +51,16 @@ const AppBar = () => {
       <ScrollView horizontal>
         <AppBarTab tabTitle="Repositories" slug="/"/>
         {data.authorizedUser === null ? 
-          <AppBarTab tabTitle="Sign In" slug="/login"/> : 
-          <Logout /> 
+          <>
+            <AppBarTab tabTitle="Sign In" slug="/login"/> 
+            <AppBarTab tabTitle="Sign Up" slug="/signUp"/>
+          </>
+           : 
+          <>
+            <AppBarTab tabTitle="Create a review" slug="/review"/>
+            <AppBarTab tabTitle="My Reviews" slug="/userReviews"/>
+            <Logout /> 
+          </>
         }
       </ScrollView>
     </View>
